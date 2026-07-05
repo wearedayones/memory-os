@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "node_types": [
+    "user",
+    "topic",
+    "object",
+    "event",
+    "location",
+    "organization"
+  ],
+  "edge_types": [
+    "knows",
+    "works_at",
+    "likes",
+    "mentions",
+    "located_in",
+    "member_of",
+    "authored_by",
+    "related_to"
+  ],
+  "edge_constraints": {
+    "type_required": true,
+    "source_and_target_required": true,
+    "allow_self_edges": false,
+    "duplicate_edge_policy": "version",
+    "min_confidence": 0.10,
+    "max_weight": 1.00,
+    "min_weight": 0.00
+  },
+  "ontology": {
+    "knows": {
+      "symmetric": true,
+      "transitive": false
+    },
+    "works_at": {
+      "symmetric": false,
+      "transitive": false
+    },
+    "likes": {
+      "symmetric": false,
+      "transitive": false
+    },
+    "located_in": {
+      "symmetric": false,
+      "transitive": false
+    },
+    "related_to": {
+      "symmetric": false,
+      "transitive": false
+    }
+  },
+  "validation": {
+    "max_undirected_edges_per_node": 500,
+    "inference_rules_enabled": true
+  }
+}

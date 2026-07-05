@@ -1,4 +1,55 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
-data/
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Node / JS
+node_modules/
+.next/
+.npm/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*~
+
+# Secrets
+.env
+*.secret
+*.key
+*.pem
+
+# Test/cache artifacts
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Logs and data (repo should contain committed examples only, not runtime state)
+*.log
+!examples/*.log
+
+# Local config overrides
+config/local.*
+!config/memory_config.json
+!config/scoring.json
+!config/graph_rules.json
+
+# User runtime state should not be committed; use examples/
+users/u_default/
+graph/nodes.json
+graph/edges.json
+index/keyword_index.json
+index/tag_index.json
+index/entity_index.json
+index/relationship_index.json
+logs/interactions.json
+logs/memory_events.json

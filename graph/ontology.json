@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "node_types": [
+    "user",
+    "topic",
+    "object",
+    "event",
+    "location",
+    "organization"
+  ],
+  "edge_types": [
+    "knows",
+    "works_at",
+    "likes",
+    "mentions",
+    "located_in",
+    "member_of",
+    "authored_by",
+    "related_to"
+  ],
+  "property_schemas": {
+    "user": {
+      "required": ["user_id"]
+    },
+    "topic": {},
+    "object": {}
+  },
+  "inference_rules": [
+    {
+      "name": "colleague_to_knows",
+      "if_all": [
+        {
+          "edge_type": "works_at"
+        },
+        {
+          "edge_type": "member_of"
+        }
+      ],
+      "then": {
+        "edge_type": "knows"
+      }
+    }
+  ],
+  "symmetry": {
+    "knows": true,
+    "related_to": false
+  },
+  "transitivity": {
+    "located_in": true,
+    "knows": false
+  }
+}

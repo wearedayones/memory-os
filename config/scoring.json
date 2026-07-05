@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "weights": {
+    "importance": 0.40,
+    "recency": 0.30,
+    "confidence": 0.20,
+    "tag_match": 0.10
+  },
+  "thresholds": {
+    "default_min_score": 0.25,
+    "high_confidence_cutoff": 0.90,
+    "low_confidence_cutoff": 0.30,
+    "max_results_per_query": 20,
+    "graph_boost": 0.05
+  },
+  "decay": {
+    "enabled": true,
+    "half_life_days": 180,
+    "floor": 0.10
+  }
+}

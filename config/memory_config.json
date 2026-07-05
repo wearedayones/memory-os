@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "default_user": "u_default",
+  "max_records_per_user": 10000,
+  "default_batch_limit": 50,
+  "default_batch_window_seconds": 300,
+  "retention": {
+    "active_days": 365,
+    "archived_days": 90,
+    "pending_days": 30
+  },
+  "summarization": {
+    "session_max_turns": 50,
+    "daily_max_tokens": 2000,
+    "trigger_on_inactivity_minutes": 60
+  },
+  "storage": {
+    "path": "users/",
+    "graph_path": "graph/",
+    "index_path": "index/",
+    "logs_path": "logs/"
+  },
+  "git": {
+    "enabled": true,
+    "branch": "main",
+    "auto_commit": true,
+    "commit_prefix": "memory"
+  }
+}
