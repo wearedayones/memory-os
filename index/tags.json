@@ -11,6 +11,42 @@
       "users": [
         "u1"
       ]
+    },
+    "communication": {
+      "count": 1,
+      "users": [
+        "jennifer"
+      ]
+    },
+    "device": {
+      "count": 1,
+      "users": [
+        "jennifer"
+      ]
+    },
+    "networking": {
+      "count": 1,
+      "users": [
+        "jennifer"
+      ]
+    },
+    "workflow": {
+      "count": 1,
+      "users": [
+        "jennifer"
+      ]
+    },
+    "infra": {
+      "count": 2,
+      "users": [
+        "jennifer"
+      ]
+    },
+    "auth": {
+      "count": 2,
+      "users": [
+        "jennifer"
+      ]
     }
   }
 }

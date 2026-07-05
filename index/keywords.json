@@ -17,6 +17,312 @@
       "user_ids": [
         "u1"
       ]
+    },
+    "prefers": {
+      "count": 2,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "concise,": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "structured,": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "copy-paste-friendly": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "responses": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "uses": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "iphone": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "primary": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "mobile": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "device": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "accesses": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "services": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "via": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "tailscale": {
+      "count": 2,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "with": {
+      "count": 2,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "account": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "marnemorgan8212@gmail.com": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "subagents": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "for": {
+      "count": 5,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "complex/iterative": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "tasks": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "speed": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "and": {
+      "count": 2,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "accuracy": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "runs": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "ubuntu": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "26.04": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "hermes": {
+      "count": 3,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "webui": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "port": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "8787": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "hostname": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "shared": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "dashboard": {
+      "count": 2,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "webui;": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "only": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "one": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "can": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "serve": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "time": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "auth": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "username": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "admin": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "tokens": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "are": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "abbreviated:": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "core": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "config,": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "hermes_webui": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "dashboard/webui": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
+    },
+    "values": {
+      "count": 1,
+      "user_ids": [
+        "jennifer"
+      ]
     }
   }
 }

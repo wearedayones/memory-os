@@ -1,0 +1,108 @@
+{
+  "entries": [
+    {
+      "id": "0d57265f1e564547",
+      "user_id": "jennifer",
+      "type": "preference",
+      "text": "Prefers concise, structured, copy-paste-friendly responses",
+      "importance": 0.95,
+      "tags": [
+        "communication"
+      ],
+      "timestamp": "2026-07-05T02:49:47.045620+00:00",
+      "created_at": "2026-07-05T02:49:47.045620+00:00",
+      "updated_at": "2026-07-05T02:49:47.045620+00:00"
+    },
+    {
+      "id": "2a70d9ec2e50a59e",
+      "user_id": "jennifer",
+      "type": "fact",
+      "text": "Uses iPhone as primary mobile device",
+      "importance": 0.9,
+      "tags": [
+        "device"
+      ],
+      "timestamp": "2026-07-05T02:49:47.046100+00:00",
+      "created_at": "2026-07-05T02:49:47.046100+00:00",
+      "updated_at": "2026-07-05T02:49:47.046100+00:00"
+    },
+    {
+      "id": "3edac324de013999",
+      "user_id": "jennifer",
+      "type": "fact",
+      "text": "Accesses services via Tailscale with account marnemorgan8212@gmail.com",
+      "importance": 0.95,
+      "tags": [
+        "networking"
+      ],
+      "timestamp": "2026-07-05T02:49:47.047265+00:00",
+      "created_at": "2026-07-05T02:49:47.047265+00:00",
+      "updated_at": "2026-07-05T02:49:47.047265+00:00"
+    },
+    {
+      "id": "0d2bb73c03c4c43a",
+      "user_id": "jennifer",
+      "type": "preference",
+      "text": "Prefers subagents for complex/iterative tasks for speed and accuracy",
+      "importance": 0.85,
+      "tags": [
+        "workflow"
+      ],
+      "timestamp": "2026-07-05T02:49:47.048261+00:00",
+      "created_at": "2026-07-05T02:49:47.048261+00:00",
+      "updated_at": "2026-07-05T02:49:47.048261+00:00"
+    },
+    {
+      "id": "36c83e45b1bcb29a",
+      "user_id": "jennifer",
+      "type": "fact",
+      "text": "Runs Ubuntu 26.04 with Hermes WebUI on port 8787",
+      "importance": 0.85,
+      "tags": [
+        "infra"
+      ],
+      "timestamp": "2026-07-05T02:49:47.049236+00:00",
+      "created_at": "2026-07-05T02:49:47.049236+00:00",
+      "updated_at": "2026-07-05T02:49:47.049236+00:00"
+    },
+    {
+      "id": "cf35090218da6a22",
+      "user_id": "jennifer",
+      "type": "fact",
+      "text": "Tailscale hostname is shared for Dashboard and WebUI; only one can serve / at a time",
+      "importance": 0.9,
+      "tags": [
+        "infra"
+      ],
+      "timestamp": "2026-07-05T02:49:47.050312+00:00",
+      "created_at": "2026-07-05T02:49:47.050312+00:00",
+      "updated_at": "2026-07-05T02:49:47.050312+00:00"
+    },
+    {
+      "id": "8e9f33224feaa640",
+      "user_id": "jennifer",
+      "type": "fact",
+      "text": "Dashboard auth username is admin",
+      "importance": 0.9,
+      "tags": [
+        "auth"
+      ],
+      "timestamp": "2026-07-05T02:49:47.051256+00:00",
+      "created_at": "2026-07-05T02:49:47.051256+00:00",
+      "updated_at": "2026-07-05T02:49:47.051256+00:00"
+    },
+    {
+      "id": "a52d61ce8917bbfd",
+      "user_id": "jennifer",
+      "type": "fact",
+      "text": "Hermes tokens are abbreviated: HERMES for core config, HERMES_WEBUI for dashboard/webui values",
+      "importance": 0.8,
+      "tags": [
+        "auth"
+      ],
+      "timestamp": "2026-07-05T02:49:47.052183+00:00",
+      "created_at": "2026-07-05T02:49:47.052183+00:00",
+      "updated_at": "2026-07-05T02:49:47.052183+00:00"
+    }
+  ]
+}
