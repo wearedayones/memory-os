@@ -1,59 +1,16 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Tag Index",
-  "description": "Tag-to-session mapping used for topic and label retrieval.",
-  "type": "object",
-  "required": ["version", "updated_at", "tags"],
-  "properties": {
-    "version": {
-      "type": "integer",
-      "minimum": 1,
-      "description": "Schema version of this file."
+  "tags": {
+    "ui": {
+      "count": 1,
+      "users": [
+        "u1"
+      ]
     },
-    "updated_at": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Timestamp of the most recent update."
-    },
-    "tags": {
-      "type": "object",
-      "description": "Mapping from tag string to session references.",
-      "additionalProperties": {
-        "type": "object",
-        "required": ["total", "sessions"],
-        "properties": {
-          "total": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "Number of sessions with this tag."
-          },
-          "sessions": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": ["session_id", "user_id"],
-              "properties": {
-                "session_id": {
-                  "type": "string",
-                  "description": "Unique session identifier."
-                },
-                "user_id": {
-                  "type": "string",
-                  "pattern": "^[a-z0-9_-]+$",
-                  "description": "Owner of the session."
-                },
-                "added_at": {
-                  "type": "string",
-                  "format": "date-time",
-                  "description": "When this tag was associated with the session."
-                }
-              },
-              "additionalProperties": false
-            }
-          }
-        }
-      }
+    "prefs": {
+      "count": 1,
+      "users": [
+        "u1"
+      ]
     }
-  },
-  "additionalProperties": false
+  }
 }
