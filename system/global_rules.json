@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Global Rules",
+  "description": "System-wide rules that affect indexing, retrieval, and fact handling behavior.",
+  "type": "object",
+  "required": ["version", "updated_at", "rules"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Schema version of this file."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the most recent rule update."
+    },
+    "rules": {
+      "type": "array",
+      "description": "Ordered list of global rules.",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "effect", "priority", "active", "created_at"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Stable unique identifier for the rule."
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Short name for the rule."
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of the rule."
+          },
+          "targets": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Optional targets, e.g. specific user patterns or topics."
+          },
+          "effect": {
+            "type": "string",
+            "enum": ["include", "exclude", "boost", "suppress", "transform"],
+            "description": "How this rule changes indexing or retrieval behavior."
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Execution order: lower priority runs first."
+          },
+          "active": {
+            "type": "boolean",
+            "description": "If false, the rule is skipped."
+          },
+          "params": {
+            "type": "object",
+            "description": "Rule-specific parameters.",
+            "additionalProperties": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the rule was created."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "System Summaries",
+  "description": "Cross-user session summaries and utility group summaries used by the indexing pipeline.",
+  "type": "object",
+  "required": ["summaries", "version", "updated_at"],
+  "properties": {
+    "summaries": {
+      "type": "array",
+      "description": "List of session summary entries.",
+      "items": {
+        "type": "object",
+        "required": ["session_id", "user_id", "summary", "created_at"],
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "Unique session identifier."
+          },
+          "user_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_-]+$",
+            "description": "Owner of the session."
+          },
+          "topic": {
+            "type": "string",
+            "description": "Optional topic label."
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Neutral summary of the session."
+          },
+          "keywords": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Keywords extracted from the session."
+          },
+          "tags": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Tags extracted from the session."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "published", "archived"],
+            "description": "Lifecycle status of the summary."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the summary was created."
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Optional expiry. Omit for durable summaries."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Schema version of this file."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the most recent update."
+    }
+  },
+  "additionalProperties": false
+}

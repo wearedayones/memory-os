@@ -1,0 +1,24 @@
+{
+  "id": "topic_20260705024034789017",
+  "user_id": "test_user",
+  "title": "Ui summary",
+  "text": "Prefer dark mode in UI",
+  "topic": "ui",
+  "tags": [
+    "ui"
+  ],
+  "created_at": "2026-07-05T02:40:34Z",
+  "updated_at": "2026-07-05T02:40:34Z",
+  "category": "structured",
+  "summary": {
+    "text": "Prefer dark mode in UI",
+    "entry_ids": [
+      "raw_20260705024034784881"
+    ],
+    "count": 1,
+    "tags": [
+      "ui"
+    ]
+  },
+  "source": "summarizer"
+}

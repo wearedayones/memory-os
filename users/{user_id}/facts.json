@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Facts",
+  "description": "Persistent facts about a user. Each fact is a simple, neutral memory entry.",
+  "type": "object",
+  "required": ["user_id", "facts", "version", "updated_at"],
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$",
+      "description": "Unique identifier for the user. Match the parent directory name."
+    },
+    "facts": {
+      "type": "array",
+      "description": "Ordered list of durable facts about the user.",
+      "items": {
+        "type": "object",
+        "required": ["id", "statement", "source", "created_at"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Stable unique identifier for the fact."
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Natural language statement of the fact."
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "How confident the system is in this fact, 0-1."
+          },
+          "source": {
+            "type": "string",
+            "description": "Where this fact originated, e.g. session bc7429c1."
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Optional expiry. Omit for durable facts."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the fact was first recorded."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Schema version of this file."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the most recent update to this facts list."
+    }
+  },
+  "additionalProperties": false
+}

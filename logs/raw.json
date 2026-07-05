@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Raw Memory Log",
+  "description": "Append-only raw ingestion log for debugging and replay. Not user-facing.",
+  "type": "object",
+  "required": ["version", "entries"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Schema version of this file."
+    },
+    "entries": {
+      "type": "array",
+      "description": "Ordered log entries, oldest first.",
+      "items": {
+        "type": "object",
+        "required": ["id", "event", "recorded_at"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique entry identifier."
+          },
+          "event": {
+            "type": "string",
+            "enum": ["ingest", "fact_create", "fact_update", "fact_delete", "summary_generated", "rule_applied", "index_updated", "error"],
+            "description": "Category of the logged event."
+          },
+          "user_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_-]+$",
+            "description": "Optional user this entry relates to."
+          },
+          "session_id": {
+            "type": "string",
+            "description": "Optional session this entry relates to."
+          },
+          "payload": {
+            "type": "object",
+            "description": "Event-specific payload.",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "object",
+            "description": "If event is error, machine-readable error information.",
+            "properties": {
+              "code": {"type": "string"},
+              "message": {"type": "string"},
+              "stack": {"type": "string"}
+            },
+            "additionalProperties": false
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the event was recorded."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

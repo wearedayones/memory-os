@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Sessions",
+  "description": "Compact index of sessions for a user, including topic and summary pointers.",
+  "type": "object",
+  "required": ["user_id", "sessions", "version", "updated_at"],
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$",
+      "description": "Unique identifier for the user. Match the parent directory name."
+    },
+    "sessions": {
+      "type": "array",
+      "description": "Session metadata entries, most recent last.",
+      "items": {
+        "type": "object",
+        "required": ["session_id", "started_at", "status"],
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "Unique session identifier."
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the session started."
+          },
+          "ended_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the session ended. Omit if still active."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "completed", "failed", "cancelled"],
+            "description": "Current lifecycle state of the session."
+          },
+          "topic": {
+            "type": "string",
+            "description": "Short topic label for the session."
+          },
+          "summary_path": {
+            "type": "string",
+            "description": "Relative path to the stored summary, if any."
+          },
+          "tags": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Optional tags tied to this session."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Schema version of this file."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the most recent update to this sessions list."
+    }
+  },
+  "additionalProperties": false
+}

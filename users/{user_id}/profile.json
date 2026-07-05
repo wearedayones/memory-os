@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Profile",
+  "description": "Static profile metadata for a hermes-memory user.",
+  "type": "object",
+  "required": ["user_id", "display_name", "created_at", "version"],
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$",
+      "description": "Unique identifier for the user. Match the parent directory name."
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable name for the user."
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Optional contact email."
+    },
+    "timezone": {
+      "type": "string",
+      "description": "IANA timezone, e.g. America/New_York."
+    },
+    "language": {
+      "type": "string",
+      "description": "Preferred language code, e.g. en-US."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Schema version of this file."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the profile was first created."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the most recent profile update."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Arbitrary key-value metadata for SDK use.",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
