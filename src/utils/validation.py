@@ -17,13 +17,34 @@ schema_fields = {
 }
 
 
+def _type_name(expected_type: Any) -> str:
+    if hasattr(expected_type, "__name__"):
+        return expected_type.__name__
+    origin = getattr(expected_type, "__origin__", None)
+    args = getattr(expected_type, "__args__", ())
+    if origin is not None:
+        inner = ", ".join(_type_name(a) for a in args)
+        if args:
+            return f"{_type_name(origin)}[{inner}]"
+        return _type_name(origin)
+    return repr(expected_type)
+
+
 def _validate_schema_entry(value: Any, expected_type: Any, path: str, errors: list[str]) -> None:
     if value is None:
+        if str(expected_type) in ("str | None", "dict | None", "list | None") or type(None) in getattr(expected_type, "__args__", ()):
+            return
+        errors.append(f"{path} expected {_type_name(expected_type)}, got NoneType")
         return
-    if isinstance(expected_type, tuple) or hasattr(expected_type, "__origin__"):
-        return
-    if not isinstance(value, expected_type):
-        errors.append(f"{path} expected {expected_type.__name__}, got {type(value).__name__}")
+    origin = getattr(expected_type, "__origin__", None)
+    args = getattr(expected_type, "__args__", ())
+    valid = False
+    if origin is not None and args:
+        valid = isinstance(value, args)
+    if not valid:
+        valid = isinstance(value, expected_type)
+    if not valid:
+        errors.append(f"{path} expected {_type_name(expected_type)}, got {type(value).__name__}")
 
 
 def is_valid_memory(record: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -36,16 +57,22 @@ def is_valid_memory(record: dict[str, Any]) -> tuple[bool, list[str]]:
     for field, expected_type in schema_fields.items():
         if field not in record:
             continue
-        _validate_schema_entry(record[field], expected_type, field, errors)
-    if record.get("importance") is not None:
+        value = record[field]
+        _validate_schema_entry(value, expected_type, field, errors)
+    if "importance" in record and record["importance"] is not None:
         importance = record["importance"]
         if not isinstance(importance, int) or not (0 <= importance <= 10):
             errors.append("importance must be int between 0 and 10")
-    if record.get("confidence") is not None:
+    if "confidence" in record and record["confidence"] is not None:
         confidence = record["confidence"]
         if not isinstance(confidence, int) or not (0 <= confidence <= 10):
             errors.append("confidence must be int between 0 and 10")
-    return (len(errors) == 0, errors)
+    if "version" in record and not isinstance(record.get("version", ""), str):
+        errors.append("version must be a string")
+    valid_status = {"active", "archived", "inactive", "broken", "deleted"}
+    if record.get("status") and record["status"] not in valid_status:
+        errors.append(f"status must be one of {sorted(valid_status)}")
+    return len(errors) == 0, errors
 
 
 def is_valid_metadata(metadata: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -54,34 +81,36 @@ def is_valid_metadata(metadata: dict[str, Any]) -> tuple[bool, list[str]]:
     return True, []
 
 
-def ensure_memory_schema(
-    data: dict[str, Any],
-    defaults: dict[str, Any] | None = None,
-) -> dict[str, Any]:
-    merged = dict(defaults) if defaults else {}
+def ensure_memory_schema(data: dict[str, Any], defaults: dict[str, Any] | None = None) -> dict[str, Any]:
+    merged: dict[str, Any] = dict(defaults) if defaults else {}
     merged.update(data)
-    if "timestamp" in merged and not merged["timestamp"]:
+
+    if "id" not in merged or not merged["id"]:
+        from utils.ids import generate_id
+        merged["id"] = generate_id()
+    if "timestamp" not in merged or not merged["timestamp"]:
         from utils.time import now_iso
         merged["timestamp"] = now_iso()
-    if "last_updated" in merged and not merged["last_updated"]:
+    if "last_updated" not in merged or not merged["last_updated"]:
         from utils.time import now_iso
         merged["last_updated"] = now_iso()
-    for field in ("importance", "confidence"):
+    if "importance" not in merged or merged.get("importance") is None:
+        merged["importance"] = 5
+    if "confidence" not in merged or merged.get("confidence") is None:
+        merged["confidence"] = 5
+    if "tags" not in merged or merged.get("tags") is None:
+        merged["tags"] = []
+    if "links" not in merged or merged.get("links") is None:
+        merged["links"] = []
+    for field in ("type", "version", "status"):
+        if field not in merged or not merged[field]:
+            merged[field] = "note" if field == "type" else "1.0.0" if field == "version" else "active"
+    for field in ("source", "content"):
         if field not in merged:
-            merged[field] = 5
-    for list_field in ("tags", "links"):
-        if list_field not in merged or merged[list_field] is None:
-            merged[list_field] = []
-    if "status" not in merged or not merged["status"]:
-        merged["status"] = "active"
-    if "version" not in merged or not merged["version"]:
-        merged["version"] = "1.0.0"
-    if "type" not in merged or not merged["type"]:
-        merged["type"] = "note"
-    if "source" not in merged:
-        merged["source"] = None
-    if "content" not in merged:
-        merged["content"] = None
+            merged[field] = None
     if "metadata" not in merged:
         merged["metadata"] = {}
+    for list_field in ("tags", "links"):
+        if not isinstance(merged.get(list_field), list):
+            merged[list_field] = []
     return merged

@@ -1,1 +1,10 @@
-{"placeholder": "Python modules will be implemented here by the code subagent."}
+{
+  "module": "storage",
+  "description": "JSON persistence layer for Hermes memory.",
+  "responsibilities": [
+    "Read and write JSON data files",
+    "Basic file locking to prevent corruption",
+    "Validate records against schema"
+  ],
+  "note": "Python implementation should be added by code subagents."
+}

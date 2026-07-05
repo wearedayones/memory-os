@@ -1,19 +1,10 @@
-from .ontology import (
-    VALID_NODE_TYPES,
-    VALID_EDGE_TYPES,
-    NodeType,
-    EdgeType,
-    Node,
-    Edge,
-)
+from .ontology import Node, Edge, VALID_NODE_TYPES, VALID_EDGE_TYPES
 from .engine import KnowledgeGraph
 
 __all__ = [
-    'VALID_NODE_TYPES',
-    'VALID_EDGE_TYPES',
-    'NodeType',
-    'EdgeType',
     'Node',
     'Edge',
+    'VALID_NODE_TYPES',
+    'VALID_EDGE_TYPES',
     'KnowledgeGraph',
 ]

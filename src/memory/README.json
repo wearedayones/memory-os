@@ -1,1 +1,10 @@
-{"placeholder": "Python modules will be implemented here by the code subagent."}
+{
+  "module": "memory",
+  "description": "Memory core operations for Hermes persistent memory.",
+  "responsibilities": [
+    "Create and update memory records with timestamps and versioning",
+    "Enforce schema fields",
+    "Emit memory events"
+  ],
+  "note": "Python implementation should be added by code subagents."
+}

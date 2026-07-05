@@ -1,1 +1,10 @@
-{"placeholder": "Python modules will be implemented here by the code subagent."}
+{
+  "module": "retrieval",
+  "description": "Query and ranking pipeline for Hermes memory.",
+  "responsibilities": [
+    "Parse queries into candidates",
+    "Expand candidates via graph",
+    "Score and rank results"
+  ],
+  "note": "Python implementation should be added by code subagents."
+}

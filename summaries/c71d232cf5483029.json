@@ -1,0 +1,11 @@
+{
+  "id": "c71d232cf5483029",
+  "type": "conversation",
+  "summary": "Conversation summary (11 chars)",
+  "payload": {
+    "scope": "conversation",
+    "source_text": "hello world",
+    "metadata": {}
+  },
+  "created_at": "2026-07-05T03:20:13.825958+00:00"
+}

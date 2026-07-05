@@ -40,13 +40,16 @@ hermes-memory/
 ├── .gitignore                # Git ignore rules
 ├── config/                   # Global configuration and rules
 │   ├── memory_config.json    # System settings, retention, limits
+│   ├── graph_rules.json      # Relationship types and edge constraints
 │   ├── scoring.json          # Ranking weights and thresholds
-│   └── graph_rules.json      # Relationship types and edge constraints
+│   └── retrieval.json        # Retrieval pipeline behavior
 ├── users/                    # Per-user memory data
-│   └── {user_id}/            # e.g., u_abc123 / u_default
+│   └── {user_id}/            # e.g., u_default / u_alice
 │       ├── profile.json      # User preferences and metadata
 │       ├── facts.json        # Extracted facts about the user
 │       ├── preferences.json  # Learned preferences
+│       ├── goals.json        # User goals with optional deadlines
+│       ├── projects.json     # Active and backlog projects
 │       ├── sessions.json     # Conversation sessions
 │       ├── summaries.json    # Session and daily summaries
 │       └── relationships.json # User-specific relationship links
@@ -62,7 +65,7 @@ hermes-memory/
 ├── logs/                     # Append-only event logs
 │   ├── interactions.json     # Raw Hermes interaction log
 │   └── memory_events.json    # Memory CRUD and lifecycle events
-├── src/                      # Source modules (empty stubs for now)
+├── src/                      # Source modules
 │   ├── memory/               # Memory core operations
 │   ├── graph/                # Graph management
 │   ├── retrieval/            # Query and ranking
@@ -155,7 +158,7 @@ All memory records share a common core schema:
 `graph/ontology.json` defines:
 - Valid node and edge types
 - Property schemas
-- Inference rules (e.g., `friend_of` friend suggests `knows`)
+- Inference rules (e.g., `friend_of` suggests `knows`)
 - Symmetric/asymmetric relationship flags
 - Transitivity rules
 
@@ -167,7 +170,7 @@ Retrieval runs in multiple stages:
 
 1. **Candidate Generation**: Match keywords, tags, entities from query.
 2. **Graph Expansion**: Include related nodes/edges from knowledge graph.
-3. **Scoring**: Blend recency, importance, confidence, and tag match scores using weights from `config/scoring.json`.
+3. **Scoring**: Blend recency, importance, confidence, and tag match scores using weights from `config/retrieval.json`.
 4. **Cutoff**: Enforce per-query and per-user limits from `config/memory_config.json`.
 5. **Ranking**: Sort by final score, return top-k results.
 
@@ -183,13 +186,8 @@ Query inputs:
 - Branches: `main` for committed state; ephemeral branches for bulk rebuilds.
 - Commit messages follow: `memory: <action> <type> <id> [user:<user_id>]`
   - Example: `memory: create fact mem_20250101_000001 [user:u_alice]`
-- Old `core.py` is intentionally excluded from this scaffolding. Do not delete without explicit instruction.
-
-### Commit Frequency
-
-- Interactive: one commit per meaningful memory event.
-- Batch: one commit per 50 records or 5 minutes, whichever is earlier.
-- Force commits on schema migrations.
+- Old legacy `core.py` is intentionally excluded from this scaffolding. Do not delete without explicit instruction.
+- Batch commits are throttled to avoid noisy history; prefer bundling related writes before committing.
 
 ## Coding Standards
 

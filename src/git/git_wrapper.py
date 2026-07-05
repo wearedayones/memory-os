@@ -42,5 +42,17 @@ class GitWrapper:
     def rollback(self, steps: int = 1) -> str:
         if steps < 1:
             raise ValueError("rollback steps must be >= 1")
-        result = self._run(["reset", "--hard", f"HEAD~{steps}"])
-        return result.stdout.strip()
+        self._run(["reset", "--hard", f"HEAD~{steps}"])
+        return "rollback complete"
+
+    def pull(self, remote: str = "origin", branch: str | None = None) -> str:
+        refspec = branch if branch else ""
+        result = self._run(["pull", remote, refspec], check=False)
+        output = (result.stdout or result.stderr).strip()
+        return output
+
+    def push(self, remote: str = "origin", branch: str | None = None) -> str:
+        refspec = branch if branch else ""
+        result = self._run(["push", remote, refspec], check=False)
+        output = (result.stdout or result.stderr).strip()
+        return output

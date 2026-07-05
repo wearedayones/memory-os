@@ -1,1 +1,10 @@
-{"placeholder": "Python modules will be implemented here by the code subagent."}
+{
+  "module": "graph",
+  "description": "Knowledge graph management for Hermes memory.",
+  "responsibilities": [
+    "Create and validate nodes and edges",
+    "Enforce graph rules and ontology constraints",
+    "Support graph expansion for retrieval"
+  ],
+  "note": "Python implementation should be added by code subagents."
+}

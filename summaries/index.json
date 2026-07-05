@@ -1,0 +1,61 @@
+{
+  "summaries": [
+    {
+      "id": "c71d232cf5483029",
+      "type": "conversation",
+      "summary": "Conversation summary (11 chars)",
+      "payload": {
+        "scope": "conversation",
+        "source_text": "hello world",
+        "metadata": {}
+      },
+      "created_at": "2026-07-05T03:20:13.825958+00:00"
+    },
+    {
+      "id": "6debc0b83c128bc5",
+      "type": "user",
+      "user_id": "u1",
+      "summary": "",
+      "created_at": "2026-07-05T03:20:13.826321+00:00"
+    },
+    {
+      "id": "3edad07c6bbcfb14",
+      "type": "daily",
+      "user_id": "u1",
+      "date": "2026-07-05",
+      "summary": "Daily summary 2026-07-05: ",
+      "created_at": "2026-07-05T03:20:13.826500+00:00"
+    },
+    {
+      "id": "fecd6b806b4a9e65",
+      "type": "long_term",
+      "user_id": "u1",
+      "summary": "Long-term summary (incomplete; 0 items). ",
+      "item_count": 0,
+      "created_at": "2026-07-05T03:20:13.827554+00:00"
+    },
+    {
+      "id": "153866e1d8cfb6dd",
+      "type": "user",
+      "user_id": "u1",
+      "summary": "",
+      "created_at": "2026-07-05T03:20:19.843033+00:00"
+    },
+    {
+      "id": "bb468503d526fc72",
+      "type": "daily",
+      "user_id": "u1",
+      "date": "2026-07-05",
+      "summary": "Daily summary 2026-07-05: ",
+      "created_at": "2026-07-05T03:20:19.843312+00:00"
+    },
+    {
+      "id": "d629117b0206d13c",
+      "type": "long_term",
+      "user_id": "u1",
+      "summary": "Long-term summary (incomplete; 0 items). ",
+      "item_count": 0,
+      "created_at": "2026-07-05T03:20:19.844297+00:00"
+    }
+  ]
+}

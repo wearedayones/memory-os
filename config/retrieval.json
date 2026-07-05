@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "updated_at": "2025-01-01T00:00:00Z",
+  "description": "Retrieval pipeline configuration for hermes-memory.",
+  "candidate_generation": {
+    "enabled": true,
+    "max_keyword_candidates": 200,
+    "max_tag_candidates": 200,
+    "max_entity_candidates": 100,
+    "max_graph_expansion_depth": 2
+  },
+  "scoring": {
+    "enabled": true,
+    "min_score_cutoff": 0.10,
+    "weights": {
+      "recency": 0.25,
+      "importance": 0.30,
+      "confidence": 0.25,
+      "tag_match": 0.10,
+      "graph_proximity": 0.10
+    },
+    "default_limit": 20
+  },
+  "filters": {
+    "default_status": "active",
+    "allowed_sources": [
+      "user_statement",
+      "inferred",
+      "system",
+      "external_api"
+    ],
+    "time_window_days": 90
+  },
+  "responses": {
+    "include_context_nodes": true,
+    "include_related_memories": true,
+    "max_related_memories": 5
+  },
+  "limits": {
+    "per_query_hard_limit": 100,
+    "per_user_hard_limit": 20,
+    "graph_edge_expansion_limit": 50
+  },
+  "fallback": {
+    "strategy": "recency_decay",
+    "empty_results_include_top_recent": true,
+    "top_recent_limit": 5
+  }
+}

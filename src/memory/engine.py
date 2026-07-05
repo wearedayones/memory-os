@@ -10,28 +10,32 @@ from typing import Any
 from storage.json_store import JsonStore
 from utils.ids import generate_id, generate_link_id
 from utils.time import age_seconds, now_iso
-from utils.validation import ensure_memory_schema, is_valid_memory, is_valid_metadata
+from utils.validation import ensure_memory_schema, is_valid_memory, is_valid_metadata, schema_fields
 
 
 class MemoryEngine:
+    _REQUIRED_SCHEMA_FIELDS = list(schema_fields.keys())
+
     def __init__(self, base_path: str, user: str = "default") -> None:
         self.base_path = os.path.abspath(base_path)
         self.user = user
         self._store_dir = os.path.join(self.base_path, "memories", self.user)
         self._user_dir = os.path.join(self.base_path, "users")
         self._store = JsonStore(self._store_dir)
+        self._graph_path = os.path.join(self.base_path, "graph", f"{self.user}.json")
         os.makedirs(self._user_dir, exist_ok=True)
+        os.makedirs(os.path.dirname(self._graph_path), exist_ok=True)
 
-    def _empty_memory(self, overrides: dict[str, Any] | None = None) -> dict[str, Any]:
-        record = {
+    def _default_memory(self, overrides: dict[str, Any] | None = None) -> dict[str, Any]:
+        memory = {
             "id": generate_id(),
             "timestamp": now_iso(),
-            "last_updated": now_iso(),
+            "updated_at": now_iso(),
             "importance": 5,
             "confidence": 5,
             "tags": [],
-            "source": None,
             "type": "note",
+            "source": None,
             "status": "active",
             "version": "1.0.0",
             "content": None,
@@ -39,88 +43,46 @@ class MemoryEngine:
             "links": [],
         }
         if overrides:
-            record.update(overrides)
-        return ensure_memory_schema(record)
+            memory.update({k: v for k, v in overrides.items() if v is not None})
+        return ensure_memory_schema(memory)
 
-    def _auto_link(self, record: dict[str, Any]) -> list[str]:
-        record_id = record.get("id")
-        if not record_id:
-            return list(record.get("links") or [])
-        record_tags = {tag.lower() for tag in (record.get("tags") or [])}
-        if not record_tags:
-            return list(record.get("links") or [])
-        seen: set[str] = {record_id}
-        seen.update(record.get("links") or [])
-        new_links: list[str] = list(seen)
-        for key in self._store.list_keys():
-            if key in seen:
-                continue
-            candidate = self._store.read(key)
-            if candidate is None:
-                continue
-            if candidate.get("status") != "active":
-                continue
-            candidate_tags = {tag.lower() for tag in (candidate.get("tags") or [])}
-            if record_tags & candidate_tags:
-                seen.add(key)
-                new_links.append(key)
-        return sorted(set(new_links))
-
-    @staticmethod
-    def _resolve_boundary(value: datetime | str | None) -> str | None:
-        if value is None:
-            return None
-        if isinstance(value, datetime):
-            return value.astimezone(timezone.utc).isoformat()
-        stripped = value.strip()
-        if stripped.endswith("Z"):
-            stripped = stripped[:-1] + "+00:00"
-        parsed = datetime.fromisoformat(stripped)
-        if parsed.tzinfo is None:
-            parsed = parsed.replace(tzinfo=timezone.utc)
-        return parsed.astimezone(timezone.utc).isoformat()
+    def _normalize_memory(self, memory: dict[str, Any]) -> dict[str, Any]:
+        normalized = ensure_memory_schema({}, defaults={k: v for k, v in memory.items() if v is not None})
+        if not normalized.get("id"):
+            normalized["id"] = generate_id()
+        if not normalized.get("timestamp"):
+            normalized["timestamp"] = now_iso()
+        if not normalized.get("updated_at"):
+            normalized["updated_at"] = now_iso()
+        if not normalized.get("last_updated") and not normalized.get("updated_at"):
+            normalized["updated_at"] = now_iso()
+        return normalized
 
     @staticmethod
     def _text_haystack(record: dict[str, Any]) -> str:
-        parts = [
-            record.get("content") or "",
-            record.get("source") or "",
-            record.get("type") or "",
-            " ".join(record.get("tags") or []),
-        ]
+        parts = [str(record.get(k, "")) for k in ("content", "source", "type") if record.get(k)]
+        parts.extend(record.get("tags", []))
         metadata = record.get("metadata")
         if metadata:
             parts.append(json.dumps(metadata, ensure_ascii=True, sort_keys=True))
         return " ".join(parts)
 
-    def _normalize_memory(self, memory: dict[str, Any]) -> dict[str, Any]:
-        overrides = {k: memory[k] for k in memory if memory.get(k) is not None}
-        record = ensure_memory_schema({}, defaults=overrides)
-        if not record.get("id"):
-            record["id"] = generate_id()
-        if not record.get("timestamp"):
-            record["timestamp"] = now_iso()
-        if not record.get("last_updated"):
-            record["last_updated"] = now_iso()
-        return record
-
-    def _atomic_user_write(self, path: str, data: dict[str, Any]) -> None:
-        os.makedirs(os.path.dirname(path) if os.path.dirname(path) else ".", exist_ok=True)
-        fd, temp_path = tempfile.mkstemp(
-            dir=os.path.dirname(path) or ".", suffix=".tmp"
-        )
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as handle:
-                json.dump(data, handle, ensure_ascii=True, indent=2, sort_keys=True)
-            os.replace(temp_path, path)
-        except Exception:
-            try:
-                os.remove(temp_path)
-            except OSError:
-                pass
-            raise
-
-    # Core mutators
+    def _auto_link(self, record: dict[str, Any]) -> list[str]:
+        record_id = record.get("id")
+        if not record_id:
+            return list(record.get("links") or [])
+        seen: set[str] = {record_id}
+        seen.update(record.get("links") or [])
+        record_tags = {tag.lower() for tag in (record.get("tags") or [])}
+        for key in self._store.list_keys():
+            if key in seen:
+                continue
+            candidate = self._store.read(key)
+            if candidate is None or candidate.get("status") != "active":
+                continue
+            if record_tags & {tag.lower() for tag in (candidate.get("tags") or [])}:
+                seen.add(key)
+        return sorted(seen)
 
     def remember(self, memory: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(memory, dict):
@@ -145,68 +107,70 @@ class MemoryEngine:
         record = self._store.read(memory_id)
         if record is None:
             return None
-        merged = {**record, **updates, "last_updated": now_iso()}
+        safe_updates = dict(updates)
+        safe_updates["updated_at"] = now_iso()
+        if safe_updates.get("last_updated") == "":
+            safe_updates.pop("last_updated", None)
+        merged = {**record, **safe_updates}
+        merged = self._normalize_memory(merged)
         valid, errors = is_valid_memory(merged)
         if not valid:
             raise ValueError(f"Invalid memory after update: {errors}")
-        merged = ensure_memory_schema(merged)
         self._store.write(memory_id, merged)
         return copy.deepcopy(merged)
 
-    def forget(self, memory_id: str, *, hard: bool = False) -> bool:
+    def forget(self, memory_id: str, *, hard: bool = False, prune_links: bool = True) -> bool:
         record = self._store.read(memory_id)
-        if record is None:
+        if record is None or record.get("status") in {"archived", "deleted"}:
             return False
         if hard:
             self._store.delete(memory_id)
+            if prune_links:
+                for key in self._store.list_keys():
+                    item = self._store.read(key)
+                    if item and memory_id in (item.get("links") or []):
+                        item["links"] = [link for link in item.get("links", []) if link != memory_id]
+                        self._store.write(key, item)
         else:
-            record = {**record, "status": "archived", "last_updated": now_iso()}
-            self._store.write(memory_id, record)
+            updated = {**record, "status": "archived", "updated_at": now_iso()}
+            updated = self._normalize_memory(updated)
+            self._store.write(memory_id, updated)
         return True
 
     def merge(self, primary_id: str, secondary_id: str) -> dict[str, Any] | None:
         primary = self._store.read(primary_id)
         secondary = self._store.read(secondary_id)
-        if primary is None or secondary is None:
+        if not primary or not secondary:
             return None
         merged_tags = sorted(set(primary.get("tags", []) + secondary.get("tags", [])))
         merged_links = sorted(set(primary.get("links", []) + secondary.get("links", [])))
-        if primary_id not in merged_links:
-            merged_links.append(primary_id)
-        if secondary_id not in merged_links:
-            merged_links.append(secondary_id)
+        for item_id in (primary_id, secondary_id):
+            if item_id not in merged_links:
+                merged_links.append(item_id)
         metadata = copy.deepcopy(primary.get("metadata") or {})
         metadata.update(secondary.get("metadata") or {})
-        content = primary.get("content") or secondary.get("content")
-        importance = max(
-            int(primary.get("importance", 5)), int(secondary.get("importance", 5))
-        )
-        confidence = max(
-            int(primary.get("confidence", 5)), int(secondary.get("confidence", 5))
-        )
-        source = primary.get("source") or secondary.get("source")
-        memory_type = primary.get("type") or secondary.get("type")
         merged = {
             "id": primary_id,
             "timestamp": primary.get("timestamp", now_iso()),
-            "last_updated": now_iso(),
-            "importance": importance,
-            "confidence": confidence,
+            "updated_at": now_iso(),
+            "importance": max(int(primary.get("importance", 5)), int(secondary.get("importance", 5))),
+            "confidence": max(int(primary.get("confidence", 5)), int(secondary.get("confidence", 5))),
             "tags": merged_tags,
-            "source": source,
-            "type": memory_type,
+            "source": primary.get("source") or secondary.get("source"),
+            "type": primary.get("type") or secondary.get("type"),
             "status": "active",
             "version": primary.get("version", "1.0.0"),
-            "content": content,
+            "content": primary.get("content") or secondary.get("content"),
             "metadata": metadata,
             "links": merged_links,
         }
-        merged = ensure_memory_schema(merged)
+        merged = self._normalize_memory(merged)
+        valid, errors = is_valid_memory(merged)
+        if not valid:
+            raise ValueError(f"Invalid merged memory: {errors}")
         self._store.write(primary_id, merged)
-        self.forget(secondary_id, hard=True)
+        self.forget(secondary_id, hard=True, prune_links=False)
         return copy.deepcopy(merged)
-
-    # Queries
 
     def search(
         self,
@@ -218,12 +182,10 @@ class MemoryEngine:
         memory_type: str | None = None,
         status: str | None = None,
         source: str | None = None,
-        since: datetime | str | None = None,
-        until: datetime | str | None = None,
+        since: str | None = None,
+        until: str | None = None,
     ) -> list[dict[str, Any]]:
-        since_iso = self._resolve_boundary(since)
-        until_iso = self._resolve_boundary(until)
-        matches: list[dict[str, Any]] = []
+        results: list[dict[str, Any]] = []
         for key in self._store.list_keys():
             record = self._store.read(key)
             if record is None:
@@ -238,24 +200,18 @@ class MemoryEngine:
                 continue
             if confidence_ge is not None and int(record.get("confidence", 5)) < confidence_ge:
                 continue
-            if since_iso:
-                ts = record.get("timestamp") or ""
-                if not ts or ts < since_iso:
-                    continue
-            if until_iso:
-                ts = record.get("timestamp") or ""
-                if ts and ts > until_iso:
-                    continue
+            if since is not None and (record.get("timestamp") or "") < since:
+                continue
+            if until is not None and (record.get("timestamp") or "") > until:
+                continue
             if tags:
-                record_tags = {t.lower() for t in record.get("tags", [])}
-                lower_tags = [t.lower() for t in tags]
-                if not all(tag in record_tags for tag in lower_tags):
+                record_tags = {tag.lower() for tag in (record.get("tags") or [])}
+                if not all(tag.lower() in record_tags for tag in tags):
                     continue
-            if text:
-                if text.lower() not in self._text_haystack(record).lower():
-                    continue
-            matches.append(copy.deepcopy(record))
-        return matches
+            if text and text.lower() not in self._text_haystack(record).lower():
+                continue
+            results.append(copy.deepcopy(record))
+        return results
 
     def summarize(self, group_by: str = "type") -> dict[str, Any]:
         summaries: dict[str, Any] = {}
@@ -264,16 +220,10 @@ class MemoryEngine:
             if record is None:
                 continue
             group = record.get(group_by) or "unknown"
-            if group not in summaries:
-                summaries[group] = {
-                    "count": 0,
-                    "total_importance": 0,
-                    "total_confidence": 0,
-                    "tags": [],
-                    "sources": [],
-                }
-            summary = summaries[group]
+            summary = summaries.setdefault(group, {"count": 0, "tags": [], "sources": []})
             summary["count"] += 1
+            summary.setdefault("total_importance", 0)
+            summary.setdefault("total_confidence", 0)
             summary["total_importance"] += int(record.get("importance", 5))
             summary["total_confidence"] += int(record.get("confidence", 5))
             for tag in record.get("tags", []):
@@ -282,16 +232,10 @@ class MemoryEngine:
             source = record.get("source")
             if source and source not in summary["sources"]:
                 summary["sources"].append(source)
-        for group, summary in summaries.items():
+        for summary in summaries.values():
             count = summary["count"]
-            summary["average_importance"] = (
-                summary["total_importance"] / count if count else 0.0
-            )
-            summary["average_confidence"] = (
-                summary["total_confidence"] / count if count else 0.0
-            )
-            del summary["total_importance"]
-            del summary["total_confidence"]
+            summary["average_importance"] = summary.pop("total_importance", 0) / count if count else 0.0
+            summary["average_confidence"] = summary.pop("total_confidence", 0) / count if count else 0.0
         return summaries
 
     def cleanup(
@@ -303,19 +247,18 @@ class MemoryEngine:
         statuses: list[str] | None = None,
         dry_run: bool = False,
     ) -> list[str]:
-        target_statuses = set(statuses) if statuses else {"inactive", "archived", "broken"}
+        target_statuses = set(statuses) if statuses else {"inactive", "archived", "broken", "deleted"}
         removed: list[str] = []
-        keys = self._store.list_keys()
-        for key in keys:
+        for key in list(self._store.list_keys()):
             record = self._store.read(key)
             if record is None:
                 continue
-            if importance_below is not None and int(record.get("importance", 5)) >= importance_below:
+            if importance_below is not None and int(record.get("importance", 5)) > importance_below:
                 continue
-            if confidence_below is not None and int(record.get("confidence", 5)) >= confidence_below:
+            if confidence_below is not None and int(record.get("confidence", 5)) > confidence_below:
                 continue
             if older_than_seconds is not None:
-                age = age_seconds(record.get("last_updated") or "")
+                age = age_seconds(record.get("updated_at") or "")
                 if age is None or age < older_than_seconds:
                     continue
             if record.get("status") not in target_statuses:
@@ -325,18 +268,14 @@ class MemoryEngine:
                 self._store.delete(key)
         return removed
 
-    # User-level persistence
-
     def save_user(self, user_data: dict[str, Any]) -> None:
         is_valid_metadata(user_data)
-        user_dir = self._user_dir
-        os.makedirs(user_dir, exist_ok=True)
-        path = os.path.join(user_dir, f"{self.user}.json")
-        fd, temp_path = tempfile.mkstemp(dir=user_dir, suffix=".tmp")
+        user_path = os.path.join(self._user_dir, f"{self.user}.json")
+        fd, temp_path = tempfile.mkstemp(dir=self._user_dir, suffix=".tmp")
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as handle:
                 json.dump(user_data, handle, ensure_ascii=True, indent=2, sort_keys=True)
-            os.replace(temp_path, path)
+            os.replace(temp_path, user_path)
         except Exception:
             try:
                 os.remove(temp_path)
@@ -349,17 +288,72 @@ class MemoryEngine:
         if not os.path.exists(path):
             return None
         with open(path, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+        is_valid_metadata(payload)
+        return payload
+
+    def load_graph(self) -> dict[str, Any] | None:
+        if not os.path.exists(self._graph_path):
+            return None
+        with open(self._graph_path, "r", encoding="utf-8") as handle:
             return json.load(handle)
 
-    # Validation / import / export
+    def save_graph(self, graph: dict[str, Any]) -> None:
+        os.makedirs(os.path.dirname(self._graph_path), exist_ok=True)
+        fd, temp_path = tempfile.mkstemp(dir=os.path.dirname(self._graph_path), suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                json.dump(graph, handle, ensure_ascii=True, indent=2, sort_keys=True)
+            os.replace(temp_path, self._graph_path)
+        except Exception:
+            try:
+                os.remove(temp_path)
+            except OSError:
+                pass
+            raise
+
+    def search_graph(self, query: str | None = None, *, min_links: int | None = None) -> list[dict[str, Any]]:
+        entries: list[dict[str, Any]] = []
+        for key in self._store.list_keys():
+            record = self._store.read(key)
+            if record is None:
+                continue
+            if query and query.lower() not in self._text_haystack(record).lower():
+                continue
+            if min_links is not None and int(len(record.get("links") or [])) < min_links:
+                continue
+            entries.append(copy.deepcopy(record))
+        return entries
+
+    def build_indexes(self) -> dict[str, Any]:
+        memory_count = len(self._store.list_keys())
+        tag_index: dict[str, list[str]] = {}
+        for key in self._store.list_keys():
+            record = self._store.read(key)
+            if record is None:
+                continue
+            for tag in record.get("tags", []):
+                tag_index.setdefault(tag, []).append(key)
+        graph = {
+            "nodes": memory_count,
+            "edges": {},
+            "tag_index": tag_index,
+        }
+        return graph
 
     def validate(self, memory: dict[str, Any]) -> tuple[bool, list[str]]:
         return is_valid_memory(memory)
 
+    def import_memory(self, memory: dict[str, Any]) -> dict[str, Any]:
+        if "id" not in memory or not memory["id"]:
+            memory = {**memory, "id": generate_id()}
+        return self.remember(memory)
+
     def export_memory(self, memory_id: str) -> dict[str, Any] | None:
         return self.recall(memory_id)
 
-    def import_memory(self, memory: dict[str, Any]) -> dict[str, Any]:
-        if "id" not in memory:
-            memory = {**memory, "id": generate_id()}
-        return self.remember(memory)
+    def sync(self) -> dict[str, Any]:
+        summary = self.summarize()
+        graph = self.build_indexes()
+        self.save_graph(graph)
+        return {"summary": summary, "graph": graph}

@@ -3,8 +3,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-from ..graph.engine import KnowledgeGraph
-from ..graph.ontology import Edge, Node
+from graph.engine import KnowledgeGraph
+from graph.ontology import Edge, Node
 
 
 class ScoringEngine:

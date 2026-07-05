@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from collections import Counter
 from typing import Any, Dict, List, Optional, Tuple
 
-from ..graph.engine import KnowledgeGraph
-from ..graph.ontology import VALID_NODE_TYPES
+from graph.engine import KnowledgeGraph
+from graph.ontology import VALID_NODE_TYPES, Node
 
 
 class RetrievalEngine:
@@ -96,14 +95,15 @@ class RetrievalEngine:
         top = fused[: max(top_k // (1 if expand_relationships else max_hops * 2), top_k)]
         results: List[Tuple[Any, float, List[Any]]] = []
         for node, score in top:
-            if expand_relationships:
-                expanded = self.relationship_expansion(node.node_id, max_hops=max_hops)
-            else:
-                expanded = [(node, 0, [])]
+            expanded = self.relationship_expansion(node.node_id, max_hops=max_hops) if expand_relationships else [(node, 0, [])]
+            found = False
             for expanded_node, hop_count, path_edges in expanded:
+                found = True
                 rel_boost = max(0.0, 1.0 - (0.15 * hop_count))
                 results.append((expanded_node, score * rel_boost, path_edges))
-
+            if not found:
+                # Ensure the original candidate is always represented.
+                results.append((node, score, []))
         results.sort(key=lambda x: (-x[1], x[0].node_id))
         return results[:top_k]
 
